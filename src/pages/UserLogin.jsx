@@ -1,24 +1,36 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Toaster, toast } from "sonner";
-
+import { UserDataContext } from "../context/userContext";
+import axios from "axios";
 function UserLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [userData, setUserData] = useState("");
-
-  const handleSubmit = (e) => {
+  const { user, setUser } = React.useContext(UserDataContext);
+  const navigate = useNavigate();
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    setUserData({
+    const userData = {
       email: email,
       password: password,
-    });
+    };
+
+    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login`, userData);
+    if (response.status === 200) {
+      const data = response.data;
+      setUser(data.user);
+      try {
+        localStorage.setItem("token", response.data.token);
+      } catch (error) {
+        console.error("Failed to store token in localStorage:", error);
+      }
+    }
 
     if (email && password) {
       toast.success("Login successful!", { position: "top-center" });
       setEmail("");
       setPassword("");
+      navigate("/home");
     } else {
       toast.error("Please fill all fields!", { position: "top-center" });
     }

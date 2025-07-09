@@ -1,23 +1,36 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Toaster, toast } from "sonner";
+import axios from "axios";
+import { UserDataContext } from "../context/userContext";
 
 function UserSignup() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [userData, setUserData] = useState("");
-  const handleSubmit = (e) => {
+
+  const { user, setUser } = React.useContext(UserDataContext);
+  const navigate = useNavigate();
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setUserData({
-      fullName: {
-        firstName: firstName,
-        lastName: lastName,
+    const newUser = {
+      fullname: {
+        firstname: firstName,
+        lastname: lastName,
       },
       email: email,
       password: password,
-    });
+    };
+
+    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/register`, newUser);
+    if (response.status === 201) {
+      const data = response.data;
+      setUser(data.user);
+      localStorage.setItem("token", data.token);
+      navigate("/home");
+    }
+
     if (firstName && lastName && email && password) {
       toast.success("Signup successful!", { position: "top-center" });
       setFirstName("");
@@ -77,7 +90,7 @@ function UserSignup() {
           </div>
 
           <button type="submit" className="w-full bg-black text-white py-3 rounded-lg text-lg font-bold mb-4 hover:bg-gray-900">
-            Login
+            Create Account
           </button>
 
           <p className="text-center font-semibold text-sm">
@@ -88,8 +101,9 @@ function UserSignup() {
           </p>
 
           <div className="absolute bottom-4 left-4 right-4 max-w-sm mx-auto text-sm text-gray-500">
-            <p className='text-[10px] leading-tight'>This site is protected by reCAPTCHA and the <span className='underline'>Google Privacy
-            Policy</span> and <span className='underline'>Terms of Service apply</span>.</p>
+            <p className="text-[10px] leading-tight">
+              This site is protected by reCAPTCHA and the <span className="underline">Google Privacy Policy</span> and <span className="underline">Terms of Service apply</span>.
+            </p>
           </div>
         </div>
 
