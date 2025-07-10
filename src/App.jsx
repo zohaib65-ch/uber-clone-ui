@@ -4,8 +4,9 @@ import UserSignup from "./pages/UserSignup";
 import CaptainLogin from "./pages/CaptainLogin";
 import CaptainSignup from "./pages/CaptainSignup";
 import Start from "./pages/Start";
-import Home from "./pages/Home";
 import UserProtectWrapper from "./pages/UserProtectWrapper";
+import Home from "./pages/UserHome";
+import CaptainHome from "./pages/CaptainHome";
 
 function App() {
   return (
@@ -21,6 +22,14 @@ function App() {
           element={
             <UserProtectWrapper>
               <Home />
+            </UserProtectWrapper>
+          }
+        />
+        <Route
+          path="/captain-home"
+          element={
+            <UserProtectWrapper>
+              <CaptainHome />
             </UserProtectWrapper>
           }
         />
